@@ -142,13 +142,14 @@ button.ex-row:hover { background: color-mix(in srgb, var(--ex-c0) 9%, transparen
 .ex-table td { padding: 8px 10px; border-bottom: 1px solid var(--color-border-line); }
 .ex-table tr:last-child td { border-bottom: 0; }
 .ex-table th.ex-num, .ex-table td.ex-num { text-align: right; }
-.ex-table td.ex-spk { font-size: 1.1rem; letter-spacing: 1px; color: var(--ex-c0); line-height: 1; }
+.ex-table td.ex-spk { font-family: Consolas, "Courier New", ui-monospace, monospace; font-size: 1rem; letter-spacing: 0; color: var(--ex-c0); line-height: 1; white-space: nowrap; }
 .ex-table tr.ex-click { cursor: pointer; }
 .ex-table tr.ex-click:hover td { background: color-mix(in srgb, var(--ex-c0) 9%, transparent); }
 .ex-table tr.ex-on td { font-weight: 600; background: color-mix(in srgb, var(--ex-c0) 14%, transparent); }
 .ex-table td.ex-state { text-align: center; color: var(--color-fg-muted); height: 2rem; }
 .ex-defs { margin: var(--cds-gap-md) 0 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.55; }
 .ex-defs b { color: var(--color-fg); font-weight: 600; }
+.ex-search { min-width: 16rem; }
 [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
 [data-dash-source-state=empty] { color: transparent; }
 
@@ -399,8 +400,8 @@ button.ex-row:hover { background: color-mix(in srgb, var(--ex-c0) 9%, transparen
         <h2><span class="ex-h-ico" style="--hc: var(--ex-c1)" data-icon="truck"></span>Fulfilment health</h2>
         <p class="ex-note">Monthly averages across all items in the selected window (at least six months).</p>
         <div class="ex-minis">
-          <div><p class="ex-mini-t">Days to ship</p><div class="ex-chart dash-skeleton ex-mini" data-metric="days_to_ship" data-fmt-id="d1" data-source="ops_monthly"></div></div>
-          <div><p class="ex-mini-t">Days to deliver</p><div class="ex-chart dash-skeleton ex-mini" data-metric="days_to_deliver" data-fmt-id="d1" data-source="ops_monthly"></div></div>
+          <div><p class="ex-mini-t">Days to ship</p><div class="ex-chart dash-skeleton ex-mini" data-metric="days_to_ship" data-fmt-id="d2" data-source="ops_monthly"></div></div>
+          <div><p class="ex-mini-t">Days to deliver</p><div class="ex-chart dash-skeleton ex-mini" data-metric="days_to_deliver" data-fmt-id="d2" data-source="ops_monthly"></div></div>
           <div><p class="ex-mini-t">Return rate</p><div class="ex-chart dash-skeleton ex-mini" data-metric="return_rate" data-fmt-id="pct" data-source="ops_monthly"></div></div>
           <div><p class="ex-mini-t">Cancel rate</p><div class="ex-chart dash-skeleton ex-mini" data-metric="cancel_rate" data-fmt-id="pct" data-source="ops_monthly"></div></div>
         </div>
@@ -469,6 +470,7 @@ const fPct = d3.format('.1%');
 const fPct0 = d3.format('.0%');
 const fSgn = d3.format('+.1%');
 const fD1 = d3.format('.1f');
+const fD2 = d3.format('.2~f');
 const FMT = {
   usd0: (v) => usd0.format(v),
   usdC: (v) => usdC.format(v),
@@ -478,6 +480,7 @@ const FMT = {
   pct0: (v) => fPct0(v),
   sgn: (v) => fSgn(v),
   d1: (v) => fD1(v),
+  d2: (v) => fD2(v),
   pts: (v) => (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(1) + ' pts',
   text: (v) => String(v)
 };

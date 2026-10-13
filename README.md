@@ -4,7 +4,15 @@ An interactive, multi-tab executive dashboard over a live BigQuery warehouse, bu
 
 The point of the project is to find out what Claude Dashboards is actually good for, where it stops, and how a dashboard like this fits next to Tableau or Power BI.
 
-<!-- Add after recording: ![Overview](assets/overview.png) ![Customers map](assets/customers-map.png) ![Dark mode](assets/overview-dark.png) -->
+![Walkthrough](assets/walkthrough.gif)
+
+| | |
+|---|---|
+| ![Overview, light theme](assets/overview-light.png) | ![Overview, dark theme](assets/overview-dark.png) |
+| ![Drill-down into Men, Outerwear and Coats](assets/drilldown-outerwear.png) | ![Customers tab with the state map](assets/customers-map.png) |
+| ![Products tab, sorted by growth](assets/products-table.png) | ![Operations tab with funnel](assets/operations-funnel.png) |
+
+*Captured on 2026-10-13 from the dashboard's page source, rendered against a snapshot of the live BigQuery results: the default view plus one drill-down (Men, Outerwear and Coats). Inside Claude Dashboards the same page queries BigQuery live and adds the Sources panel, sharing and comments.*
 
 ## What it does
 
