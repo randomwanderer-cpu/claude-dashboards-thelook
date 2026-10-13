@@ -4,6 +4,9 @@ An interactive, multi-tab executive dashboard over a live BigQuery warehouse, bu
 
 The point of the project is to find out what Claude Dashboards is actually good for, where it stops, and how a dashboard like this fits next to Tableau or Power BI.
 
+![Demo](docs/demo.gif)
+
+**Watch the full walkthrough (95 seconds): [docs/demo.mp4](docs/demo.mp4).** It covers the KPIs and trend, click-to-filter drill-down, the SQL behind the numbers, cohorts, the real US map, sortable tables, the session funnel and the light/dark themes.
 ![Walkthrough](assets/walkthrough.gif)
 
 | | |
@@ -84,6 +87,15 @@ The page itself (layout, charts, interactions, theme switch) is in [`dashboard/`
 
 See [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) for the recording walkthrough.
 
+### Regenerate the demo video
+
+The video is produced by scripts in [`docs/`](docs): `build-harness.mjs` runs the dashboard page against a snapshot of the real BigQuery results (`fixtures.js`), `record-demo.mjs` drives it with a scripted cursor and captions through the DevTools protocol, and `encode-demo.mjs` encodes it with ffmpeg.
+
+```bash
+node docs/build-harness.mjs
+node docs/record-demo.mjs
+node docs/encode-demo.mjs
+```
 ## Stack
 
 BigQuery (public dataset, sandbox) · Claude Dashboards · d3 for charts · SQL
