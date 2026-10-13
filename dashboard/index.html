@@ -1,0 +1,1154 @@
+<script src="usmap.js"></script>
+<style>
+.ex { --ex-r: calc(var(--cds-radius) * 1.5); font-family: var(--font-anthropic-sans); color: var(--color-fg); max-width: 1240px; margin-inline: auto; }
+.ex * { box-sizing: border-box; }
+.ex { --ex-c0: var(--ex-base0); --ex-c1: var(--ex-base1); --ex-c2: var(--ex-base2); --ex-c3: var(--ex-base3); --ex-c4: var(--ex-base4); --ex-c5: var(--ex-base5); --ex-c6: var(--ex-base6); --ex-c7: var(--ex-base7); }
+.ex.ex-light, .ex.ex-dark { padding: 22px; border-radius: 24px; background: var(--color-bg); color: var(--color-fg); }
+.ex.ex-light {
+  color-scheme: light;
+  --color-bg: #f3f5f9; --color-panel: #ffffff; --color-fg: #131821; --color-fg-muted: #5a6475; --color-border-line: #dde2ea;
+  --cds-chart-grid: #e3e7ee; --cds-surface-popover: #ffffff; --cds-border: #d3d9e3; --cds-text-secondary: #5a6475;
+  --cds-shadow-popover: 0 10px 28px rgba(20, 30, 50, .16);
+  --color-ok: #15803d; --color-bad: #b91c1c; --cds-chart-status-critical: #dc2626;
+  --ex-c0: #2f5fe0; --ex-c1: #e8590c; --ex-c2: #0f9d74; --ex-c3: #8b3fd1; --ex-c4: #c99700; --ex-c5: #0891b2; --ex-c6: #d6336c; --ex-c7: #4d8f0a;
+  box-shadow: 0 12px 40px rgba(20, 30, 50, .1);
+}
+.ex.ex-dark {
+  color-scheme: dark;
+  --color-bg: #0b0f15; --color-panel: #161b24; --color-fg: #eef1f6; --color-fg-muted: #98a2b3; --color-border-line: #283142;
+  --cds-chart-grid: #252e3d; --cds-surface-popover: #1d2431; --cds-border: #2f3a4c; --cds-text-secondary: #a9b3c4;
+  --cds-shadow-popover: 0 10px 30px rgba(0, 0, 0, .55);
+  --color-ok: #4ade80; --color-bad: #fb7185; --cds-chart-status-critical: #fb7185;
+  --ex-c0: #7aa7ff; --ex-c1: #ff9f68; --ex-c2: #52d6a4; --ex-c3: #d58cff; --ex-c4: #ffd166; --ex-c5: #5ad1ff; --ex-c6: #ff7a90; --ex-c7: #a3e635;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .35);
+}
+.ex-theme { position: absolute; top: 16px; right: 16px; z-index: 2; display: inline-flex; gap: 2px; padding: 3px; background: color-mix(in srgb, var(--color-bg) 70%, transparent); border: 1px solid var(--color-border-line); border-radius: 999px; backdrop-filter: blur(6px); }
+.ex-theme button { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: var(--cds-font-size-caption); font-weight: 500; color: var(--color-fg-muted); background: none; border: 0; border-radius: 999px; padding: 6px 12px 6px 9px; cursor: pointer; }
+.ex-theme button:hover { color: var(--color-fg); }
+.ex-theme button[aria-pressed=true] { background: var(--color-fg); color: var(--color-bg); }
+.ex-hero { position: relative; overflow: hidden; border: 1px solid var(--color-border-line); border-radius: calc(var(--ex-r) * 1.4); padding: 26px 28px 22px; margin-bottom: var(--cds-gap-md);
+  background:
+    radial-gradient(90% 150% at 0% 0%, color-mix(in srgb, var(--ex-c0) 24%, transparent) 0%, transparent 62%),
+    radial-gradient(70% 130% at 100% 100%, color-mix(in srgb, var(--ex-c1) 20%, transparent) 0%, transparent 65%),
+    var(--color-panel); }
+.ex-hero-art { position: absolute; right: -24px; top: -30px; width: min(52%, 460px); pointer-events: none; opacity: .95; }
+.ex-hero-body { position: relative; }
+.ex-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.ex-logo { width: 48px; height: 48px; flex: none; border-radius: 14px; display: grid; place-items: center; color: var(--color-bg);
+  background: linear-gradient(135deg, var(--ex-c0), var(--ex-c1)); box-shadow: 0 6px 18px color-mix(in srgb, var(--ex-c0) 40%, transparent); }
+.ex-logo svg { width: 26px; height: 26px; }
+.ex-hero h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; margin: 0; letter-spacing: -0.01em; }
+.ex-eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 4px; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.ex-live { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border-radius: 999px; background: color-mix(in srgb, var(--color-ok) 14%, transparent); color: var(--color-ok); font-weight: 500; }
+.ex-live i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; display: inline-block; }
+.ex-take { margin: 0; max-width: 70ch; font-size: 1.02rem; line-height: 1.6; color: var(--color-fg-muted); }
+.ex-take b { color: var(--color-fg); font-weight: 600; }
+
+.ex-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--cds-gap-md); padding: var(--cds-pad-sm) var(--cds-pad-lg); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--ex-r); margin-bottom: var(--cds-gap-md); }
+.ex-bar label { display: flex; flex-direction: column; gap: 3px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.ex-bar .ex-lab { display: inline-flex; align-items: center; gap: 5px; }
+.ex-bar select, .ex-search { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 6px 10px; }
+.ex-bar select:focus-visible, .ex-search:focus-visible { outline: 2px solid var(--ex-c0); outline-offset: 1px; }
+.ex-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; align-self: center; }
+.ex-chip { font: inherit; font-size: var(--cds-font-size-caption); font-weight: 500; color: var(--color-fg); background: color-mix(in srgb, var(--ex-c0) 14%, transparent); border: 1px solid color-mix(in srgb, var(--ex-c0) 45%, transparent); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+.ex-reset { margin-left: auto; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); background: none; border: 1px solid var(--color-border-line); border-radius: 999px; padding: 6px 13px; cursor: pointer; }
+.ex-reset:hover { color: var(--color-fg); border-color: var(--color-fg-muted); }
+
+.ex-tabs { display: inline-flex; gap: 4px; padding: 4px; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 999px; margin: 0 0 var(--cds-gap-md); max-width: 100%; overflow-x: auto; }
+.ex-tab { font: inherit; display: inline-flex; align-items: center; gap: 7px; background: none; border: 0; border-radius: 999px; padding: 8px 16px; color: var(--color-fg-muted); cursor: pointer; white-space: nowrap; font-weight: 500; }
+.ex-tab:hover { color: var(--color-fg); }
+.ex-tab[aria-selected=true] { color: var(--color-bg); background: var(--color-fg); }
+.ex-ico-s { width: 16px; height: 16px; display: inline-block; flex: none; }
+
+.ex-page[hidden] { display: none; }
+.ex-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--ex-r); padding: var(--cds-pad-lg); min-width: 0; box-shadow: 0 1px 2px color-mix(in srgb, var(--color-fg) 6%, transparent); }
+.ex-card h2 { display: flex; align-items: center; gap: 8px; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0 0 2px; }
+.ex-h-ico { width: 28px; height: 28px; flex: none; border-radius: 8px; display: grid; place-items: center; color: var(--hc, var(--ex-c0)); background: color-mix(in srgb, var(--hc, var(--ex-c0)) 15%, transparent); }
+.ex-h-ico svg { width: 17px; height: 17px; }
+.ex-note { margin: 0 0 var(--cds-gap-md); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.45; }
+
+.ex-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-md); margin-bottom: var(--cds-gap-md); }
+.ex-kpi { position: relative; overflow: hidden; --k: var(--ex-c0); }
+.ex-kpi::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--k); }
+.ex-kpi-top { display: flex; align-items: center; gap: 9px; }
+.ex-ico { width: 34px; height: 34px; flex: none; border-radius: 10px; display: grid; place-items: center; color: var(--k, var(--ex-c0)); background: color-mix(in srgb, var(--k, var(--ex-c0)) 15%, transparent); }
+.ex-ico svg { width: 19px; height: 19px; }
+.ex-label { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); font-weight: 500; }
+.ex-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2.15rem; line-height: 1.15; min-height: 2.6rem; margin-top: 8px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.ex-name { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); min-height: 1.5rem; margin-top: 8px; }
+.ex-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin: 4px 0 8px; font-variant-numeric: tabular-nums; }
+.ex-pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-weight: 600; background: color-mix(in srgb, var(--color-fg-muted) 14%, transparent); }
+.ex-pill.ex-up { background: color-mix(in srgb, var(--color-ok) 15%, transparent); }
+.ex-pill.ex-down { background: color-mix(in srgb, var(--color-bad) 15%, transparent); }
+.ex-up { color: var(--color-ok); }
+.ex-down { color: var(--color-bad); }
+.ex-failed { font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-weight: 400; }
+.ex-spark { height: 40px; }
+
+.ex-insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--cds-gap-md); margin-top: var(--cds-gap-md); }
+.ex-insight { --k: var(--ex-c0); display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+
+.ex-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); margin-bottom: var(--cds-gap-md); }
+.ex-grid21 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-md); margin-bottom: var(--cds-gap-md); }
+@media (min-width: 900px) { .ex-grid21 { grid-template-columns: 2fr 1fr; } }
+.ex-mb { margin-bottom: var(--cds-gap-md); }
+.ex-chart { position: relative; min-height: 160px; }
+.ex-chart.ex-tall { min-height: 300px; }
+.ex-chart svg { display: block; }
+.ex-chart.dash-skeleton { min-height: 160px; }
+.ex-fail { display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 160px; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.ex-fail::before { content: ''; width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--color-bad); }
+.ex-tip { position: absolute; pointer-events: none; z-index: 5; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ex-tip-d { color: var(--cds-text-secondary); font-weight: 600; }
+
+.ex-rows { display: flex; flex-direction: column; gap: 4px; }
+.ex-row { font: inherit; color: inherit; text-align: left; display: grid; grid-template-columns: minmax(4.5rem, 7.5rem) 1fr auto auto; align-items: center; gap: 10px; background: none; border: 1px solid transparent; border-radius: var(--cds-radius); padding: 7px 8px; cursor: default; width: 100%; }
+button.ex-row { cursor: pointer; }
+button.ex-row:hover { background: color-mix(in srgb, var(--ex-c0) 9%, transparent); }
+.ex-row.ex-on { border-color: var(--ex-c0); background: color-mix(in srgb, var(--ex-c0) 12%, transparent); }
+.ex-row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--cds-font-size-body); }
+.ex-row-track { height: 10px; background: var(--cds-chart-grid); border-radius: 5px; overflow: hidden; }
+.ex-row-fill { display: block; height: 100%; border-radius: 5px; background: var(--ex-c0); }
+.ex-row-val { font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-body); min-width: 4.5rem; text-align: right; font-weight: 500; }
+.ex-row-extra { font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); min-width: 3.6rem; text-align: right; }
+.ex-legend { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.ex-legend i { display: block; flex: 0 0 140px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, color-mix(in srgb, var(--ex-c0) 12%, transparent), var(--ex-c0)); }
+
+.ex-scroll { overflow-x: auto; }
+.ex-cohort { border-collapse: separate; border-spacing: 3px; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; width: 100%; }
+.ex-cohort th { font-weight: 500; color: var(--color-fg-muted); text-align: center; padding: 3px 6px; }
+.ex-cohort th:first-child, .ex-cohort td:first-child { text-align: left; white-space: nowrap; }
+.ex-cohort td { text-align: center; padding: 7px 4px; border-radius: 6px; min-width: 2.7rem; }
+.ex-cohort td.ex-size { color: var(--color-fg-muted); }
+
+.ex-funnel { display: flex; flex-direction: column; gap: 10px; }
+.ex-stage { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.ex-stage-bar { position: relative; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; min-width: 9rem; color: var(--color-bg); font-variant-numeric: tabular-nums; }
+.ex-stage-bar.ex-bad { background: var(--cds-chart-status-critical, var(--color-bad)) !important; }
+.ex-stage-main { font-weight: 600; }
+.ex-stage-main small { font-weight: 500; opacity: .9; margin-left: 8px; }
+.ex-stage-conv { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.ex-stage-conv.ex-bad { color: var(--color-bad); font-weight: 600; }
+
+.ex-minis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--cds-gap-md); }
+.ex-mini-t { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-weight: 500; margin: 0 0 2px; }
+.ex-tools { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; margin-bottom: var(--cds-gap-sm); }
+.ex-tablewrap { max-height: 460px; overflow: auto; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+.ex-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-body); font-variant-numeric: tabular-nums; }
+.ex-table th { position: sticky; top: 0; z-index: 1; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: 9px 10px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; user-select: none; }
+.ex-sortable th[data-field] { cursor: pointer; }
+.ex-sortable th[aria-sort=ascending]::after { content: ' ▲'; font-size: 0.7em; }
+.ex-sortable th[aria-sort=descending]::after { content: ' ▼'; font-size: 0.7em; }
+.ex-table td { padding: 8px 10px; border-bottom: 1px solid var(--color-border-line); }
+.ex-table tr:last-child td { border-bottom: 0; }
+.ex-table th.ex-num, .ex-table td.ex-num { text-align: right; }
+.ex-table td.ex-spk { font-size: 1.1rem; letter-spacing: 1px; color: var(--ex-c0); line-height: 1; }
+.ex-table tr.ex-click { cursor: pointer; }
+.ex-table tr.ex-click:hover td { background: color-mix(in srgb, var(--ex-c0) 9%, transparent); }
+.ex-table tr.ex-on td { font-weight: 600; background: color-mix(in srgb, var(--ex-c0) 14%, transparent); }
+.ex-table td.ex-state { text-align: center; color: var(--color-fg-muted); height: 2rem; }
+.ex-defs { margin: var(--cds-gap-md) 0 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.55; }
+.ex-defs b { color: var(--color-fg); font-weight: 600; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+[data-dash-source-state=empty] { color: transparent; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ex-card, .ex-hero { animation: ex-rise var(--cds-dur-slow) var(--cds-ease-out) both; }
+  .ex-live i { animation: ex-pulse 1.8s ease-in-out infinite; }
+  .ex-hero-art { animation: ex-float 9s ease-in-out infinite; }
+}
+@keyframes ex-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes ex-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes ex-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+</style>
+
+<div class="ex" id="ex-root">
+  <header class="ex-hero" id="ex-hero">
+    <svg class="ex-hero-art" viewBox="0 0 460 300" aria-hidden="true">
+      <circle cx="340" cy="90" r="150" style="fill:none;stroke:var(--ex-c0);stroke-opacity:.28" stroke-width="1.5"/>
+      <circle cx="340" cy="90" r="108" style="fill:none;stroke:var(--ex-c1);stroke-opacity:.3" stroke-width="1.5"/>
+      <circle cx="340" cy="90" r="66" style="fill:var(--ex-c0);fill-opacity:.12"/>
+      <circle cx="340" cy="90" r="30" style="fill:var(--ex-c1);fill-opacity:.28"/>
+      <path d="M40 250C120 230 160 170 230 175s120 -75 220 -60" style="fill:none;stroke:var(--ex-c0);stroke-opacity:.55" stroke-width="3" stroke-linecap="round"/>
+      <path d="M40 270C130 250 180 205 250 210s110 -50 200 -40" style="fill:none;stroke:var(--ex-c1);stroke-opacity:.45" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 8"/>
+      <circle cx="450" cy="115" r="6" style="fill:var(--ex-c0)"/>
+    </svg>
+    <div class="ex-theme" role="group" aria-label="Colour theme"><button type="button" id="ex-th-light" data-theme="light" aria-pressed="true"><span class="ex-ico-s" data-icon="sun"></span>Light</button><button type="button" id="ex-th-dark" data-theme="dark" aria-pressed="false"><span class="ex-ico-s" data-icon="moon"></span>Dark</button></div>
+    <div class="ex-hero-body">
+      <div class="ex-brand">
+        <span class="ex-logo" data-icon="bag"></span>
+        <div>
+          <h1>TheLook e-commerce</h1>
+          <div class="ex-eyebrow">
+            <span>Executive dashboard</span>
+            <span class="ex-live"><i></i>Live from BigQuery</span>
+          </div>
+        </div>
+      </div>
+      <p class="ex-take">
+        <span id="ex-period">Last 12 months</span>: revenue of
+        <b data-fmt="usdC" data-source="kpis" data-field="revenue" data-where="period=current">—</b>,
+        <b data-fmt="sgn" data-sign="1" data-source="kpi_delta" data-field="change" data-where="metric=revenue">—</b> on the period before.
+        <b data-fmt="text" data-source="leaders" data-field="name" data-where="kind=top">—</b> is the biggest category and
+        <b data-fmt="text" data-source="leaders" data-field="name" data-where="kind=growth">—</b> is growing fastest.
+      </p>
+    </div>
+  </header>
+
+  <div class="ex-bar" id="ex-filters">
+    <label><span class="ex-lab"><span class="ex-ico-s" data-icon="calendar"></span>Period</span>
+      <select id="f-months">
+        <option value="3">Last 3 months</option>
+        <option value="6">Last 6 months</option>
+        <option value="12" selected>Last 12 months</option>
+        <option value="24">Last 24 months</option>
+      </select>
+    </label>
+    <label><span class="ex-lab"><span class="ex-ico-s" data-icon="shirt"></span>Department</span>
+      <select id="f-department" data-source="opt_departments"><option value="">All departments</option></select>
+    </label>
+    <label><span class="ex-lab"><span class="ex-ico-s" data-icon="megaphone"></span>Channel</span>
+      <select id="f-channel" data-source="opt_channels"><option value="">All channels</option></select>
+    </label>
+    <div class="ex-chips" id="f-chips"></div>
+    <button class="ex-reset" id="f-reset" type="button">Reset filters</button>
+  </div>
+
+  <nav class="ex-tabs" role="tablist">
+    <button class="ex-tab" id="tab-overview" role="tab" data-tab="overview" aria-selected="true"><span class="ex-ico-s" data-icon="layers"></span>Overview</button>
+    <button class="ex-tab" id="tab-customers" role="tab" data-tab="customers" aria-selected="false"><span class="ex-ico-s" data-icon="users"></span>Customers</button>
+    <button class="ex-tab" id="tab-products" role="tab" data-tab="products" aria-selected="false"><span class="ex-ico-s" data-icon="box"></span>Products</button>
+    <button class="ex-tab" id="tab-operations" role="tab" data-tab="operations" aria-selected="false"><span class="ex-ico-s" data-icon="truck"></span>Operations</button>
+  </nav>
+
+  <section class="ex-page" id="overview">
+    <div class="ex-kpis">
+      <article class="ex-card ex-kpi" data-metric="revenue" data-i="0">
+        <div class="ex-kpi-top"><span class="ex-ico" data-icon="dollar"></span><span class="ex-label">Revenue</span></div>
+        <div class="ex-big" data-fmt="usdC" data-source="kpis" data-field="revenue" data-where="period=current">—</div>
+        <div class="ex-sub"><span class="ex-pill" data-fmt="sgn" data-sign="1" data-source="kpi_delta" data-field="change" data-where="metric=revenue">—</span> vs prior period</div>
+        <div class="ex-spark dash-skeleton" data-source="trend"></div>
+      </article>
+      <article class="ex-card ex-kpi" data-metric="profit" data-i="1">
+        <div class="ex-kpi-top"><span class="ex-ico" data-icon="trend"></span><span class="ex-label">Gross profit</span></div>
+        <div class="ex-big" data-fmt="usdC" data-source="kpis" data-field="profit" data-where="period=current">—</div>
+        <div class="ex-sub"><span class="ex-pill" data-fmt="pct" data-source="kpi_delta" data-field="value" data-where="metric=margin">—</span> margin <span data-fmt="pts" data-sign="1" data-source="kpi_delta" data-field="change" data-where="metric=margin">—</span></div>
+        <div class="ex-spark dash-skeleton" data-source="trend"></div>
+      </article>
+      <article class="ex-card ex-kpi" data-metric="orders" data-i="2">
+        <div class="ex-kpi-top"><span class="ex-ico" data-icon="bag"></span><span class="ex-label">Orders</span></div>
+        <div class="ex-big" data-fmt="int" data-source="kpis" data-field="orders" data-where="period=current">—</div>
+        <div class="ex-sub"><span class="ex-pill" data-fmt="sgn" data-sign="1" data-source="kpi_delta" data-field="change" data-where="metric=orders">—</span> vs prior period</div>
+        <div class="ex-spark dash-skeleton" data-source="trend"></div>
+      </article>
+      <article class="ex-card ex-kpi" data-metric="customers" data-i="3">
+        <div class="ex-kpi-top"><span class="ex-ico" data-icon="users"></span><span class="ex-label">Buying customers</span></div>
+        <div class="ex-big" data-fmt="int" data-source="kpis" data-field="customers" data-where="period=current">—</div>
+        <div class="ex-sub"><span class="ex-pill" data-fmt="sgn" data-sign="1" data-source="kpi_delta" data-field="change" data-where="metric=customers">—</span> vs prior period</div>
+        <div class="ex-spark dash-skeleton" data-source="trend"></div>
+      </article>
+      <article class="ex-card ex-kpi" data-metric="aov" data-i="4">
+        <div class="ex-kpi-top"><span class="ex-ico" data-icon="tag"></span><span class="ex-label">Average order value</span></div>
+        <div class="ex-big" data-fmt="usd2" data-source="kpis" data-field="aov" data-where="period=current">—</div>
+        <div class="ex-sub"><span class="ex-pill" data-fmt="sgn" data-sign="1" data-source="kpi_delta" data-field="change" data-where="metric=aov">—</span> vs prior period</div>
+        <div class="ex-spark dash-skeleton" data-source="trend"></div>
+      </article>
+    </div>
+
+    <div class="ex-grid21">
+      <section class="ex-card" id="ex-trend-card">
+        <h2><span class="ex-h-ico" data-icon="trend"></span>Revenue trend</h2>
+        <p class="ex-note">Monthly revenue (bars), 3-month average (line) and the same month a year earlier (dashed). Follows the department, channel, category and state filters.</p>
+        <div class="ex-chart ex-tall dash-skeleton" id="ex-trend" data-source="trend"></div>
+      </section>
+      <section class="ex-card" id="ex-channel-card">
+        <h2><span class="ex-h-ico" style="--hc: var(--ex-c1)" data-icon="megaphone"></span>Channels</h2>
+        <p class="ex-note">Revenue, share and growth. Click a channel to filter the whole dashboard.</p>
+        <div class="ex-chart dash-skeleton" id="ex-channels" data-source="channels"></div>
+      </section>
+    </div>
+
+    <section class="ex-card ex-mb" id="ex-mix-card">
+      <h2><span class="ex-h-ico" style="--hc: var(--ex-c2)" data-icon="layers"></span>Category mix</h2>
+      <p class="ex-note">Tile area is revenue, grouped by department. Click a tile to drill the dashboard into that category; click it again to clear.</p>
+      <div class="ex-chart ex-tall dash-skeleton" id="ex-treemap" data-source="categories"></div>
+    </section>
+
+    <div class="ex-insights">
+      <article class="ex-card ex-insight" data-i="0">
+        <span class="ex-ico" data-icon="trophy"></span>
+        <div>
+          <div class="ex-label">Biggest category</div>
+          <div class="ex-name" data-fmt="text" data-source="leaders" data-field="name" data-where="kind=top">—</div>
+          <div class="ex-sub"><span data-fmt="usdC" data-source="leaders" data-field="value" data-where="kind=top">—</span> revenue</div>
+        </div>
+      </article>
+      <article class="ex-card ex-insight" data-i="1">
+        <span class="ex-ico" data-icon="rocket"></span>
+        <div>
+          <div class="ex-label">Fastest growing category</div>
+          <div class="ex-name" data-fmt="text" data-source="leaders" data-field="name" data-where="kind=growth">—</div>
+          <div class="ex-sub"><span class="ex-pill" data-fmt="sgn" data-sign="1" data-source="leaders" data-field="value" data-where="kind=growth">—</span> vs prior period</div>
+        </div>
+      </article>
+      <article class="ex-card ex-insight" data-i="2">
+        <span class="ex-ico" data-icon="percent"></span>
+        <div>
+          <div class="ex-label">Highest-margin category</div>
+          <div class="ex-name" data-fmt="text" data-source="leaders" data-field="name" data-where="kind=margin">—</div>
+          <div class="ex-sub"><span data-fmt="pct" data-source="leaders" data-field="value" data-where="kind=margin">—</span> gross margin</div>
+        </div>
+      </article>
+      <article class="ex-card ex-insight" data-i="3">
+        <span class="ex-ico" data-icon="megaphone"></span>
+        <div>
+          <div class="ex-label">Largest channel</div>
+          <div class="ex-name" data-fmt="text" data-source="leaders" data-field="name" data-where="kind=channel">—</div>
+          <div class="ex-sub"><span data-fmt="pct" data-source="leaders" data-field="value" data-where="kind=channel">—</span> of revenue</div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="ex-page" id="customers" hidden></section>
+  <section class="ex-page" id="products" hidden></section>
+  <section class="ex-page" id="operations" hidden></section>
+
+  <template id="tpl-customers">
+    <div class="ex-grid2">
+      <section class="ex-card" id="ex-cohort-card">
+        <h2><span class="ex-h-ico" data-icon="repeat"></span>Cohort retention</h2>
+        <p class="ex-note">Share of each first-order monthly cohort that ordered again 1 to 6 months later. Darker is better. Ignores the period filter.</p>
+        <div class="ex-chart ex-scroll dash-skeleton" id="ex-cohorts" data-source="cohorts"></div>
+      </section>
+      <section class="ex-card" id="ex-demo-card">
+        <h2><span class="ex-h-ico" style="--hc: var(--ex-c1)" data-icon="users"></span>Who buys</h2>
+        <p class="ex-note">Buying customers by age band and gender for the selected period.</p>
+        <div class="ex-chart dash-skeleton" id="ex-demo" data-source="demo"></div>
+      </section>
+    </div>
+    <div class="ex-grid21">
+      <section class="ex-card" id="ex-map-card">
+        <h2><span class="ex-h-ico" style="--hc: var(--ex-c2)" data-icon="pin"></span>US revenue by state</h2>
+        <p class="ex-note">Hover a state for details, click to filter the whole dashboard, click again to clear.</p>
+        <div class="ex-chart ex-tall dash-skeleton" id="ex-map" data-source="states"></div>
+        <div class="ex-legend"><span>Lower revenue</span><i></i><span>Higher</span></div>
+      </section>
+      <section class="ex-card" id="ex-states-card">
+        <h2><span class="ex-h-ico" style="--hc: var(--ex-c2)" data-icon="trophy"></span>Top states</h2>
+        <p class="ex-note">The ten biggest states for the selected period. Click to filter.</p>
+        <div class="ex-chart dash-skeleton" id="ex-states" data-source="states"></div>
+      </section>
+    </div>
+    <section class="ex-card ex-mb" id="ex-country-card">
+      <h2><span class="ex-h-ico" style="--hc: var(--ex-c3)" data-icon="globe"></span>Top markets</h2>
+      <p class="ex-note">Revenue by country for the selected period, with duplicate local-language names merged.</p>
+      <div class="ex-chart dash-skeleton" id="ex-countries" data-source="countries"></div>
+    </section>
+  </template>
+
+  <template id="tpl-products">
+    <section class="ex-card ex-mb">
+      <h2><span class="ex-h-ico" data-icon="box"></span>Category performance</h2>
+      <p class="ex-note">Sort any column, search by name, click a row to drill in. The trend column is a calculation over twelve months of category revenue.</p>
+      <div class="ex-tools"><input class="ex-search" type="search" placeholder="Search categories" data-table="ex-cat" aria-label="Search categories"></div>
+      <div class="ex-tablewrap">
+        <table class="ex-table ex-sortable" id="ex-cat" data-source="categories" data-row-key="department,category">
+          <thead><tr>
+            <th data-field="category">Category</th>
+            <th data-field="department">Department</th>
+            <th data-source="cat_trend" data-field="spark">Trend, 12 months</th>
+            <th data-field="revenue" class="ex-num">Revenue</th>
+            <th data-field="growth" class="ex-num">Growth</th>
+            <th data-field="margin" class="ex-num">Margin</th>
+            <th data-field="items" class="ex-num">Items</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="ex-card ex-mb">
+      <h2><span class="ex-h-ico" style="--hc: var(--ex-c1)" data-icon="trophy"></span>Top 40 products</h2>
+      <p class="ex-note">The best sellers for the current filters.</p>
+      <div class="ex-tools"><input class="ex-search" type="search" placeholder="Search products or brands" data-table="ex-prod" aria-label="Search products"></div>
+      <div class="ex-tablewrap">
+        <table class="ex-table ex-sortable" id="ex-prod" data-source="top_products" data-row-key="product_id">
+          <thead><tr>
+            <th data-field="product">Product</th>
+            <th data-field="brand">Brand</th>
+            <th data-field="category">Category</th>
+            <th data-field="units" class="ex-num">Units</th>
+            <th data-field="revenue" class="ex-num">Revenue</th>
+            <th data-field="margin" class="ex-num">Margin</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-operations">
+    <div class="ex-grid2">
+      <section class="ex-card" id="ex-funnel-card">
+        <h2><span class="ex-h-ico" data-icon="filter"></span>Session funnel</h2>
+        <p class="ex-note">Web sessions that viewed a product, added to cart and purchased. The biggest loss between stages is flagged. Follows the channel and state filters.</p>
+        <div class="ex-chart dash-skeleton" id="ex-funnel" data-source="funnel_rates"></div>
+        <p class="ex-note" style="margin: var(--cds-gap-sm) 0 0"><span data-fmt="int" data-source="funnel" data-field="sessions" data-where="stage=cancel">—</span> sessions ended in a cancellation.</p>
+      </section>
+      <section class="ex-card" id="ex-fulfil-card">
+        <h2><span class="ex-h-ico" style="--hc: var(--ex-c1)" data-icon="truck"></span>Fulfilment health</h2>
+        <p class="ex-note">Monthly averages across all items in the selected window (at least six months).</p>
+        <div class="ex-minis">
+          <div><p class="ex-mini-t">Days to ship</p><div class="ex-chart dash-skeleton ex-mini" data-metric="days_to_ship" data-fmt-id="d1" data-source="ops_monthly"></div></div>
+          <div><p class="ex-mini-t">Days to deliver</p><div class="ex-chart dash-skeleton ex-mini" data-metric="days_to_deliver" data-fmt-id="d1" data-source="ops_monthly"></div></div>
+          <div><p class="ex-mini-t">Return rate</p><div class="ex-chart dash-skeleton ex-mini" data-metric="return_rate" data-fmt-id="pct" data-source="ops_monthly"></div></div>
+          <div><p class="ex-mini-t">Cancel rate</p><div class="ex-chart dash-skeleton ex-mini" data-metric="cancel_rate" data-fmt-id="pct" data-source="ops_monthly"></div></div>
+        </div>
+      </section>
+    </div>
+    <section class="ex-card ex-mb">
+      <h2><span class="ex-h-ico" style="--hc: var(--ex-c2)" data-icon="pin"></span>Distribution centers</h2>
+      <p class="ex-note">Throughput, speed and returns by fulfilment site for the selected period.</p>
+      <div class="ex-tablewrap">
+        <table class="ex-table ex-sortable" id="ex-dc" data-source="dc" data-row-key="center">
+          <thead><tr>
+            <th data-field="center">Center</th>
+            <th data-field="items" class="ex-num">Items</th>
+            <th data-field="revenue" class="ex-num">Revenue</th>
+            <th data-field="days_to_ship" class="ex-num">Days to ship</th>
+            <th data-field="return_rate" class="ex-num">Return rate</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </template>
+
+  <p class="ex-defs">
+    <b>Revenue</b> is the sale price of items not cancelled or returned. <b>Gross profit</b> is sale price minus product cost, and <b>margin</b> is profit as a share of revenue. <b>Periods</b> are complete calendar months, compared with the same number of months before. <b>Repeat</b> in cohorts means another non-cancelled order in a later month. All SQL is custom, not a governed definition, over the public synthetic thelook_ecommerce dataset, so growth patterns are generated, not real business results.
+  </p>
+</div>
+
+<script>
+const ICON = {
+  bag: '<path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/>',
+  dollar: '<circle cx="12" cy="12" r="9"/><path d="M14.6 9.3C14.1 8.5 13.2 8 12 8c-1.5 0-2.5.8-2.5 1.9s1 1.7 2.5 2.1 2.5 1 2.5 2.1S13.5 16 12 16c-1.2 0-2.1-.5-2.6-1.3M12 6v2M12 16v2"/>',
+  trend: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.2-5.5 6.5-5.5s5.9 2 6.5 5.5"/><path d="M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14.8c1.9.6 3.1 2.4 3.5 5.2"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8.5" r="1.2"/>',
+  percent: '<path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
+  trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H4v1a4 4 0 0 0 4 4M16 6h4v1a4 4 0 0 1-4 4M12 13v4M8 20h8M10 17h4"/>',
+  rocket: '<path d="M14 4c3.5.3 5.7 2.5 6 6-1.6 3.6-4.2 5.6-8 6.5l-4.5-4.5C8.4 8.2 10.4 5.6 14 4z"/><circle cx="15" cy="9" r="1.4"/><path d="M7.5 12.5L4 13l-1 4 4-1M11.5 16.5L11 20l4-1 .5-3.5"/>',
+  megaphone: '<path d="M3 11v3l12 5V6L3 11z"/><path d="M15 9.5a3 3 0 0 1 0 5M6 14l1 5h3l-1-4.5"/>',
+  layers: '<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/>',
+  box: '<path d="M3 7l9-4 9 4v10l-9 4-9-4V7z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
+  truck: '<path d="M2 6h11v10H2zM13 9h4l4 4v3h-8"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  filter: '<path d="M3 5h18l-7 8v6l-4-2v-4L3 5z"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  shirt: '<path d="M8 3l-5 3 2 4 3-1v12h8V9l3 1 2-4-5-3a4 4 0 0 1-8 0z"/>',
+  repeat: '<path d="M17 3l4 4-4 4M3 11V9a2 2 0 0 1 2-2h16M7 21l-4-4 4-4M21 13v2a2 2 0 0 1-2 2H3"/>',
+  pin: '<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+  moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+};
+function paintIcons() {
+  $$('[data-icon]:not([data-done])').forEach((el) => {
+    const p = ICON[el.dataset.icon];
+    if (!p) return;
+    el.innerHTML = '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+    el.dataset.done = '1';
+  });
+}
+
+const usd0 = new Intl.NumberFormat('en', {style: 'currency', currency: 'USD', maximumFractionDigits: 0});
+const usdC = new Intl.NumberFormat('en', {style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1});
+const usd2 = new Intl.NumberFormat('en', {style: 'currency', currency: 'USD', maximumFractionDigits: 2});
+const fInt = d3.format(',');
+const fPct = d3.format('.1%');
+const fPct0 = d3.format('.0%');
+const fSgn = d3.format('+.1%');
+const fD1 = d3.format('.1f');
+const FMT = {
+  usd0: (v) => usd0.format(v),
+  usdC: (v) => usdC.format(v),
+  usd2: (v) => usd2.format(v),
+  int: (v) => fInt(v),
+  pct: (v) => fPct(v),
+  pct0: (v) => fPct0(v),
+  sgn: (v) => fSgn(v),
+  d1: (v) => fD1(v),
+  pts: (v) => (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(1) + ' pts',
+  text: (v) => String(v)
+};
+const monthLong = d3.utcFormat('%B %Y');
+const monthShort = d3.utcFormat("%b '%y");
+const parseM = (s) => new Date(s + 'T00:00:00Z');
+
+dash.calc('kpi_delta', {
+  inputs: ['kpis'],
+  title: 'Change vs prior period',
+  description: 'Each headline metric for the selected period and its change against the same number of months before. Margin change is in percentage points.',
+  fn: (kpis) => {
+    const cur = kpis.find((r) => r.period === 'current');
+    const prev = kpis.find((r) => r.period === 'prior');
+    const n = (r, k) => (r ? Number(r[k]) : 0);
+    const ratio = (a, b) => (b ? a / b - 1 : null);
+    const out = ['revenue', 'profit', 'orders', 'items', 'customers', 'aov'].map((k) => ({metric: k, value: n(cur, k), change: ratio(n(cur, k), n(prev, k))}));
+    const mc = n(cur, 'revenue') ? n(cur, 'profit') / n(cur, 'revenue') : null;
+    const mp = n(prev, 'revenue') ? n(prev, 'profit') / n(prev, 'revenue') : null;
+    out.push({metric: 'margin', value: mc, change: mc != null && mp != null ? mc - mp : null});
+    return out;
+  }
+});
+
+dash.calc('leaders', {
+  inputs: ['categories', 'channels'],
+  title: 'Category and channel leaders',
+  description: 'The biggest, fastest-growing and highest-margin category (each at least 2% of revenue) and the largest channel.',
+  fn: (categories, channels) => {
+    const cats = categories.map((r) => ({
+      name: r.category + ' (' + r.department + ')',
+      revenue: Number(r.revenue),
+      growth: r.growth == null ? null : Number(r.growth),
+      margin: r.margin == null ? null : Number(r.margin)
+    }));
+    const total = cats.reduce((s, c) => s + c.revenue, 0);
+    const pick = (arr, f) => arr.reduce((b, c) => (b == null || f(c) > f(b) ? c : b), null);
+    const big = cats.filter((c) => c.revenue >= total * 0.02);
+    const top = pick(cats, (c) => c.revenue);
+    const grow = pick(big.filter((c) => c.growth != null), (c) => c.growth);
+    const marg = pick(big.filter((c) => c.margin != null), (c) => c.margin);
+    const chTotal = channels.reduce((s, c) => s + Number(c.revenue), 0);
+    const ch = pick(channels, (c) => Number(c.revenue));
+    return [
+      {kind: 'top', name: top ? top.name : null, value: top ? top.revenue : null},
+      {kind: 'growth', name: grow ? grow.name : null, value: grow ? grow.growth : null},
+      {kind: 'margin', name: marg ? marg.name : null, value: marg ? marg.margin : null},
+      {kind: 'channel', name: ch ? ch.channel : null, value: ch && chTotal ? Number(ch.revenue) / chTotal : null}
+    ];
+  }
+});
+
+dash.calc('cat_trend', {
+  inputs: ['cat_monthly'],
+  title: 'Category 12-month trend',
+  description: 'Each category monthly revenue over twelve months as a text sparkline, scaled from zero to its own peak.',
+  fn: (cat_monthly) => {
+    const bars = '▁▂▃▄▅▆▇█';
+    const months = [...new Set(cat_monthly.map((r) => r.month))].sort();
+    const by = new Map();
+    cat_monthly.forEach((r) => {
+      const k = r.department + '|' + r.category;
+      if (!by.has(k)) by.set(k, {department: r.department, category: r.category, v: new Map()});
+      by.get(k).v.set(r.month, Number(r.revenue));
+    });
+    return [...by.values()].map((o) => {
+      const vals = months.map((m) => o.v.get(m) || 0);
+      const hi = Math.max(...vals) || 1;
+      return {department: o.department, category: o.category, spark: vals.map((v) => bars[Math.min(7, Math.round((v / hi) * 7))]).join('')};
+    });
+  }
+});
+
+dash.calc('funnel_rates', {
+  inputs: ['funnel'],
+  title: 'Funnel conversion',
+  description: 'Sessions at each stage with the conversion from the previous stage and from the first stage.',
+  fn: (funnel) => {
+    const order = ['product', 'cart', 'purchase'];
+    const by = Object.fromEntries(funnel.map((r) => [r.stage, Number(r.sessions)]));
+    return order.map((s, i) => ({
+      stage: s,
+      sessions: by[s] || 0,
+      from_prev: i === 0 ? 1 : by[order[i - 1]] ? (by[s] || 0) / by[order[i - 1]] : null,
+      from_top: by.product ? (by[s] || 0) / by.product : null
+    }));
+  }
+});
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+function h(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+const safe = (fn, ...a) => {
+  try { fn(...a); } catch (e) { setTimeout(() => { throw e; }); }
+};
+function statusOf(ids) {
+  const s = ids.map((i) => dash.data(i).status);
+  if (s.every((x) => x === 'ok')) return 'ok';
+  if (s.some((x) => x === 'loading')) return 'loading';
+  return 'error';
+}
+function failLine() {
+  return h('div', 'ex-fail', 'Failed to load');
+}
+function paint(box, ids, draw) {
+  if (!box) return;
+  const st = statusOf(ids);
+  if (st === 'ok') {
+    box.classList.remove('dash-skeleton');
+    draw(box);
+  } else if (st === 'error') {
+    box.classList.remove('dash-skeleton');
+    box.replaceChildren(failLine());
+  } else if (!box.firstChild) {
+    box.classList.add('dash-skeleton');
+  }
+}
+function tip(box) {
+  let t = box.querySelector(':scope > .ex-tip');
+  if (!t) { t = h('div', 'ex-tip'); t.hidden = true; box.append(t); }
+  return t;
+}
+function showTip(box, ev, lines) {
+  const t = tip(box);
+  t.replaceChildren(...lines.map((l, i) => h('div', i === 0 ? 'ex-tip-d' : '', l)));
+  t.hidden = false;
+  const [px, py] = d3.pointer(ev, box);
+  t.style.left = Math.min(Math.max(px + 12, 0), Math.max(0, box.clientWidth - t.offsetWidth)) + 'px';
+  t.style.top = Math.max(py - t.offsetHeight - 10, 0) + 'px';
+}
+function hideTip(box) {
+  const t = box.querySelector(':scope > .ex-tip');
+  if (t) t.hidden = true;
+}
+const AX = 'font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-caption); fill: var(--color-fg-muted);';
+const num = (v) => (v == null || v === '' ? null : Number(v));
+const C = (i) => 'var(--ex-c' + (i % 8) + ')';
+
+let active = 'overview';
+const loaded = {overview: true};
+const tblState = {};
+
+function fillMarks() {
+  $$('[data-fmt]').forEach((el) => {
+    const r = dash.data(el.dataset.source);
+    if (r.status === 'loading') { el.classList.add('dash-skeleton'); return; }
+    el.classList.remove('dash-skeleton');
+    if (r.status !== 'ok') { el.classList.add('ex-failed'); el.textContent = 'Failed to load'; return; }
+    el.classList.remove('ex-failed');
+    const where = (el.dataset.where || '').split('&').filter(Boolean).map((p) => p.split('=').map(decodeURIComponent));
+    const row = r.data.find((x) => where.every(([k, v]) => String(x[k]) === v));
+    const raw = row ? row[el.dataset.field] : null;
+    if (raw == null || raw === '') { el.textContent = '—'; el.classList.remove('ex-up', 'ex-down'); return; }
+    const v = el.dataset.fmt === 'text' ? raw : Number(raw);
+    el.textContent = FMT[el.dataset.fmt](v);
+    if (el.dataset.sign) {
+      el.classList.toggle('ex-up', v > 0);
+      el.classList.toggle('ex-down', v < 0);
+    }
+  });
+}
+
+function fillSelect(sel, ds, field, allLabel, value) {
+  const s = $(sel);
+  const g = dash.data(ds);
+  if (g.status === 'ok') {
+    const key = g.data.map((r) => r[field]).join('|');
+    if (s.dataset.key !== key) {
+      s.replaceChildren(new Option(allLabel, ''), ...g.data.map((r) => new Option(r[field], r[field])));
+      s.dataset.key = key;
+    }
+  }
+  if (document.activeElement !== s) s.value = value == null ? '' : value;
+}
+
+function syncControls() {
+  const p = dash.params();
+  const months = p.months == null ? 12 : p.months;
+  const m = $('#f-months');
+  if (document.activeElement !== m) m.value = String(months);
+  fillSelect('#f-department', 'opt_departments', 'department', 'All departments', p.department);
+  fillSelect('#f-channel', 'opt_channels', 'channel', 'All channels', p.channel);
+  $('#ex-period').textContent = 'Last ' + months + ' months';
+  const box = $('#f-chips');
+  box.replaceChildren();
+  const add = (text, clear) => {
+    const b = h('button', 'ex-chip', text + ' ×');
+    b.type = 'button';
+    b.addEventListener('click', () => dash.setParams(clear));
+    box.append(b);
+  };
+  if (p.category) add((p.department ? p.department + ' › ' : '') + p.category, {category: null, department: null});
+  if (p.state) add(p.state, {state: null});
+}
+
+function toggleCategory(department, category) {
+  const p = dash.params();
+  if (p.category === category && p.department === department) dash.setParams({category: null, department: null});
+  else dash.setParams({category, department});
+}
+function toggleState(name) {
+  dash.setParams({state: dash.params().state === name ? null : name});
+}
+
+function drawSpark(box, metric, color) {
+  const w = box.clientWidth;
+  if (!w) return;
+  const rows = dash.data('trend').data.slice(-12).map((d) => Number(d[metric]));
+  if (!rows.length) { box.replaceChildren(); return; }
+  const H = 40;
+  const lo = d3.min(rows);
+  const hi = d3.max(rows);
+  const x = d3.scaleLinear([0, Math.max(1, rows.length - 1)], [2, w - 5]);
+  const y = d3.scaleLinear([lo - (hi - lo) * 0.15, hi + ((hi - lo) * 0.05 || 1)], [H - 3, 4]);
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${w} ${H}`).attr('role', 'img').attr('aria-label', 'Last 12 months trend');
+  const gid = 'sg-' + metric;
+  const grad = svg.append('defs').append('linearGradient').attr('id', gid).attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 1);
+  [[0, 0.3], [1, 0]].forEach(([o, a]) => grad.append('stop').attr('offset', o).attr('style', `stop-color: ${color}; stop-opacity: ${a}`));
+  svg.append('path').attr('d', d3.area().x((d, i) => x(i)).y0(H).y1((d) => y(d))(rows)).attr('fill', `url(#${gid})`);
+  svg.append('path').attr('d', d3.line().x((d, i) => x(i)).y((d) => y(d))(rows)).attr('fill', 'none').attr('stroke', color).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  svg.append('circle').attr('cx', x(rows.length - 1)).attr('cy', y(rows[rows.length - 1])).attr('r', 3.2).attr('fill', color);
+  box.replaceChildren(svg.node());
+}
+
+function drawTrend(box) {
+  const W = box.clientWidth;
+  if (!W) return;
+  const rows = dash.data('trend').data.map((d) => ({m: parseM(d.month), revenue: Number(d.revenue), ma3: Number(d.ma3), py: Number(d.prior_year), yoy: num(d.yoy), orders: Number(d.orders)}));
+  if (!rows.length) { box.replaceChildren(); return; }
+  const H = 300;
+  const m = {t: 10, r: 84, b: 28, l: 52};
+  const x = d3.scaleBand().domain(rows.map((d) => +d.m)).range([m.l, W - m.r]).padding(0.28);
+  const ymax = d3.max(rows, (d) => Math.max(d.revenue, d.py, d.ma3)) || 1;
+  const y = d3.scaleLinear().domain([0, ymax]).nice().range([H - m.b, m.t]);
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Monthly revenue trend');
+  const grad = svg.append('defs').append('linearGradient').attr('id', 'tg').attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 1);
+  [[0, 0.6], [1, 0.12]].forEach(([o, a]) => grad.append('stop').attr('offset', o).attr('style', `stop-color: ${C(0)}; stop-opacity: ${a}`));
+  const ticks = y.ticks(5);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('x', m.l - 8).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').attr('style', AX).text((t) => usdC.format(t));
+  const step = Math.max(1, Math.ceil(46 / x.step()));
+  svg.append('g').selectAll('text').data(rows.filter((d, i) => (rows.length - 1 - i) % step === 0)).join('text')
+    .attr('x', (d) => x(+d.m) + x.bandwidth() / 2).attr('y', H - 8).attr('text-anchor', 'middle').attr('style', AX).text((d) => monthShort(d.m));
+  svg.append('g').selectAll('rect').data(rows).join('rect')
+    .attr('x', (d) => x(+d.m)).attr('width', x.bandwidth()).attr('y', (d) => y(d.revenue)).attr('height', (d) => y(0) - y(d.revenue))
+    .attr('rx', 4).attr('fill', 'url(#tg)');
+  const cx = (d) => x(+d.m) + x.bandwidth() / 2;
+  svg.append('path').attr('d', d3.line().x(cx).y((d) => y(d.py))(rows)).attr('fill', 'none').attr('stroke', 'var(--color-fg-muted)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 4');
+  svg.append('path').attr('d', d3.line().x(cx).y((d) => y(d.ma3))(rows)).attr('fill', 'none').attr('stroke', C(1)).attr('stroke-width', 3).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  const last = rows[rows.length - 1];
+  svg.append('circle').attr('cx', cx(last)).attr('cy', y(last.ma3)).attr('r', 4.5).attr('fill', C(1));
+  let yA = y(last.ma3);
+  let yB = y(last.py);
+  if (Math.abs(yA - yB) < 14) { if (yA <= yB) { yA -= 7; yB += 7; } else { yA += 7; yB -= 7; } }
+  svg.append('text').attr('x', cx(last) + x.bandwidth() / 2 + 6).attr('y', yA).attr('dy', '0.32em').attr('style', AX + ' fill: var(--color-fg); font-weight: 600;').text('3-mo avg');
+  svg.append('text').attr('x', cx(last) + x.bandwidth() / 2 + 6).attr('y', yB).attr('dy', '0.32em').attr('style', AX).text('Prior year');
+  svg.append('g').selectAll('rect').data(rows).join('rect')
+    .attr('x', (d) => x(+d.m) - x.step() * 0.14).attr('width', x.step()).attr('y', m.t).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+    .on('pointerenter pointermove', (ev, d) => {
+      showTip(box, ev, [monthLong(d.m), 'Revenue ' + usd0.format(d.revenue), '3-mo avg ' + usd0.format(d.ma3), 'Prior year ' + usd0.format(d.py), 'Vs prior year ' + (d.yoy == null ? '—' : fSgn(d.yoy)), 'Orders ' + fInt(d.orders)]);
+    })
+    .on('pointerleave', () => hideTip(box));
+  box.replaceChildren(svg.node());
+}
+
+function barRows(box, items, onPick) {
+  const max = d3.max(items, (i) => i.value) || 1;
+  const wrap = h('div', 'ex-rows');
+  items.forEach((it, i) => {
+    const row = h(onPick ? 'button' : 'div', 'ex-row' + (it.selected ? ' ex-on' : ''));
+    if (onPick) { row.type = 'button'; row.addEventListener('click', () => onPick(it)); }
+    row.append(h('span', 'ex-row-name', it.name));
+    const track = h('span', 'ex-row-track');
+    const fill = h('span', 'ex-row-fill');
+    fill.style.width = (it.value / max) * 100 + '%';
+    fill.style.background = C(it.ci == null ? 0 : it.ci);
+    track.append(fill);
+    row.append(track, h('span', 'ex-row-val', it.label), h('span', 'ex-row-extra', it.extra));
+    wrap.append(row);
+  });
+  box.replaceChildren(wrap);
+}
+
+function drawChannels(box) {
+  const p = dash.params();
+  const items = dash.data('channels').data.map((r, i) => ({
+    name: r.channel, value: Number(r.revenue), label: usdC.format(Number(r.revenue)) + ' · ' + fPct0(Number(r.share)),
+    extra: r.growth == null ? '—' : fSgn(Number(r.growth)), selected: p.channel === r.channel, ci: i
+  }));
+  barRows(box, items, (it) => dash.setParams({channel: dash.params().channel === it.name ? null : it.name}));
+}
+
+function drawCountries(box) {
+  const items = dash.data('countries').data.map((r, i) => ({
+    name: r.market, value: Number(r.revenue), label: usdC.format(Number(r.revenue)), extra: fInt(Number(r.customers)) + ' buyers', ci: 3
+  }));
+  barRows(box, items, null);
+}
+
+function drawTopStates(box) {
+  const p = dash.params();
+  const items = dash.data('states').data.slice(0, 10).map((r) => ({
+    name: r.state, value: Number(r.revenue), label: usdC.format(Number(r.revenue)), extra: fInt(Number(r.customers)) + ' buyers', selected: p.state === r.state, ci: 0
+  }));
+  barRows(box, items, (it) => toggleState(it.name));
+}
+
+function drawTreemap(box) {
+  const W = box.clientWidth;
+  if (!W) return;
+  const p = dash.params();
+  const rows = dash.data('categories').data.map((r) => ({department: r.department, category: r.category, revenue: Number(r.revenue), growth: num(r.growth), margin: num(r.margin)}));
+  if (!rows.length) { box.replaceChildren(); return; }
+  const H = Math.round(Math.max(300, Math.min(460, W * 0.42)));
+  const depts = [...new Set(rows.map((r) => r.department))];
+  const root = d3.hierarchy({children: d3.groups(rows, (r) => r.department).map(([k, v]) => ({name: k, children: v}))}).sum((d) => d.revenue || 0).sort((a, b) => b.value - a.value);
+  d3.treemap().size([W, H]).paddingInner(3).paddingOuter(0).paddingTop((n) => (n.depth === 1 ? 22 : 0)).round(true)(root);
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Category revenue treemap');
+  const picked = !!p.category;
+  const isSel = (n) => p.category === n.data.category && p.department === n.data.department;
+  svg.append('g').selectAll('text').data(root.children).join('text')
+    .attr('x', (n) => n.x0 + 2).attr('y', (n) => n.y0 + 14).attr('style', AX + ' fill: var(--color-fg); font-weight: 600;').text((n) => n.data.name);
+  const leaf = svg.append('g').selectAll('g').data(root.leaves()).join('g').attr('style', 'cursor: pointer');
+  leaf.append('rect')
+    .attr('x', (n) => n.x0).attr('y', (n) => n.y0).attr('width', (n) => Math.max(0, n.x1 - n.x0)).attr('height', (n) => Math.max(0, n.y1 - n.y0)).attr('rx', 8)
+    .attr('fill', (n) => C(depts.indexOf(n.data.department)))
+    .attr('fill-opacity', (n) => (picked && !isSel(n) ? 0.25 : 0.9))
+    .attr('stroke', (n) => (isSel(n) ? 'var(--color-fg)' : 'none')).attr('stroke-width', 2.5);
+  leaf.each(function (n) {
+    const w = n.x1 - n.x0;
+    const hh = n.y1 - n.y0;
+    if (w < 56 || hh < 26) return;
+    const g = d3.select(this);
+    const maxChars = Math.floor((w - 12) / 6.6);
+    const name = n.data.category.length > maxChars ? n.data.category.slice(0, Math.max(1, maxChars - 1)) + '…' : n.data.category;
+    const tx = 'font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-caption); fill: var(--color-bg);';
+    g.append('text').attr('x', n.x0 + 8).attr('y', n.y0 + 18).attr('style', tx + ' font-weight: 600;').text(name);
+    if (hh >= 46) {
+      const sub = usdC.format(n.data.revenue) + (n.data.growth == null ? '' : ' · ' + fSgn(n.data.growth));
+      g.append('text').attr('x', n.x0 + 8).attr('y', n.y0 + 35).attr('style', tx).text(sub.length * 6.3 < w - 10 ? sub : usdC.format(n.data.revenue));
+    }
+  });
+  leaf.on('click', (ev, n) => toggleCategory(n.data.department, n.data.category))
+    .on('pointerenter pointermove', (ev, n) => showTip(box, ev, [n.data.category + ' (' + n.data.department + ')', 'Revenue ' + usd0.format(n.data.revenue), 'Growth ' + (n.data.growth == null ? '—' : fSgn(n.data.growth)), 'Margin ' + (n.data.margin == null ? '—' : fPct(n.data.margin))]))
+    .on('pointerleave', () => hideTip(box));
+  box.replaceChildren(svg.node());
+}
+
+function drawCohorts(box) {
+  const rows = dash.data('cohorts').data;
+  const by = d3.group(rows, (r) => r.cohort);
+  const cohorts = [...by.keys()].sort();
+  if (!cohorts.length) { box.replaceChildren(); return; }
+  let max = 0;
+  rows.forEach((r) => { if (Number(r.months_since) > 0) max = Math.max(max, Number(r.retention)); });
+  const table = h('table', 'ex-cohort');
+  const head = table.createTHead().insertRow();
+  ['Cohort', 'Size', '+1 mo', '+2', '+3', '+4', '+5', '+6'].forEach((t) => head.append(h('th', '', t)));
+  const tb = table.createTBody();
+  cohorts.forEach((c) => {
+    const tr = tb.insertRow();
+    const rs = by.get(c);
+    tr.insertCell().textContent = c;
+    const size = rs[0] ? Number(rs[0].size) : 0;
+    const sz = tr.insertCell();
+    sz.className = 'ex-size';
+    sz.textContent = fInt(size);
+    for (let k = 1; k <= 6; k++) {
+      const td = tr.insertCell();
+      const r = rs.find((x) => Number(x.months_since) === k);
+      if (r) {
+        const v = Number(r.retention);
+        td.textContent = fPct(v);
+        td.style.background = `color-mix(in srgb, ${C(0)} ${Math.round((max ? v / max : 0) * 85)}%, transparent)`;
+      }
+    }
+  });
+  box.replaceChildren(table);
+}
+
+function drawDemo(box) {
+  const W = box.clientWidth;
+  if (!W) return;
+  const rows = dash.data('demo').data.map((r) => ({band: r.age_band, gender: r.gender, customers: Number(r.customers)}));
+  const bands = [...new Set(rows.map((r) => r.band))].sort();
+  if (!bands.length) { box.replaceChildren(); return; }
+  const rowH = 34;
+  const H = bands.length * rowH + 28;
+  const mid = 60;
+  const half = (W - mid) / 2;
+  const max = d3.max(rows, (r) => r.customers) || 1;
+  const w = d3.scaleLinear([0, max], [0, half - 46]);
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Customers by age and gender');
+  svg.append('text').attr('x', half - 4).attr('y', 12).attr('text-anchor', 'end').attr('style', AX + ' font-weight: 600;').text('Women');
+  svg.append('text').attr('x', half + mid + 4).attr('y', 12).attr('style', AX + ' font-weight: 600;').text('Men');
+  bands.forEach((b, i) => {
+    const y0 = 24 + i * rowH;
+    svg.append('text').attr('x', W / 2).attr('y', y0 + rowH / 2).attr('dy', '0.32em').attr('text-anchor', 'middle').attr('style', AX + ' fill: var(--color-fg);').text(b);
+    const wv = rows.find((r) => r.band === b && r.gender === 'Women');
+    const mv = rows.find((r) => r.band === b && r.gender === 'Men');
+    if (wv) {
+      svg.append('rect').attr('x', half - w(wv.customers)).attr('y', y0 + 4).attr('width', w(wv.customers)).attr('height', rowH - 8).attr('rx', 5).attr('fill', C(0));
+      svg.append('text').attr('x', half - w(wv.customers) - 6).attr('y', y0 + rowH / 2).attr('dy', '0.32em').attr('text-anchor', 'end').attr('style', AX).text(fInt(wv.customers));
+    }
+    if (mv) {
+      svg.append('rect').attr('x', half + mid).attr('y', y0 + 4).attr('width', w(mv.customers)).attr('height', rowH - 8).attr('rx', 5).attr('fill', C(1));
+      svg.append('text').attr('x', half + mid + w(mv.customers) + 6).attr('y', y0 + rowH / 2).attr('dy', '0.32em').attr('style', AX).text(fInt(mv.customers));
+    }
+  });
+  box.replaceChildren(svg.node());
+}
+
+function drawMap(box) {
+  const W = box.clientWidth;
+  if (!W) return;
+  const shapes = window.US_STATES || {};
+  const p = dash.params();
+  const by = new Map(dash.data('states').data.map((r) => [r.state, {state: r.state, revenue: Number(r.revenue), orders: Number(r.orders), customers: Number(r.customers)}]));
+  const max = d3.max([...by.values()], (d) => d.revenue) || 1;
+  const entries = Object.entries(shapes).sort((a, b) => (a[0] === p.state) - (b[0] === p.state));
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', '0 0 975 610').attr('role', 'img').attr('aria-label', 'US revenue by state');
+  svg.append('g').selectAll('path').data(entries).join('path')
+    .attr('d', ([n, d]) => d)
+    .attr('fill', C(0))
+    .attr('fill-opacity', ([n]) => (by.has(n) ? 0.14 + 0.86 * Math.sqrt(by.get(n).revenue / max) : 0.05))
+    .attr('stroke', ([n]) => (p.state === n ? 'var(--color-fg)' : 'var(--color-bg)'))
+    .attr('stroke-width', ([n]) => (p.state === n ? 3 : 1.2))
+    .attr('stroke-linejoin', 'round')
+    .attr('style', 'cursor: pointer')
+    .on('click', (ev, [n]) => toggleState(n))
+    .on('pointerenter pointermove', function (ev, [n]) {
+      const d = by.get(n);
+      d3.select(this).attr('stroke', 'var(--color-fg)').attr('stroke-width', 2.5);
+      showTip(box, ev, d ? [d.state, 'Revenue ' + usd0.format(d.revenue), 'Orders ' + fInt(d.orders), 'Customers ' + fInt(d.customers), 'AOV ' + usd2.format(d.orders ? d.revenue / d.orders : 0)] : [n, 'No sales in this period']);
+    })
+    .on('pointerleave', function (ev, [n]) {
+      d3.select(this).attr('stroke', p.state === n ? 'var(--color-fg)' : 'var(--color-bg)').attr('stroke-width', p.state === n ? 3 : 1.2);
+      hideTip(box);
+    });
+  box.replaceChildren(svg.node());
+}
+
+function drawFunnel(box) {
+  const rows = dash.data('funnel_rates').data;
+  const labels = {product: 'Product views', cart: 'Added to cart', purchase: 'Purchased'};
+  let worst = -1;
+  let low = Infinity;
+  rows.forEach((r, i) => {
+    if (i > 0 && r.from_prev != null && Number(r.from_prev) < low) { low = Number(r.from_prev); worst = i; }
+  });
+  const wrap = h('div', 'ex-funnel');
+  rows.forEach((r, i) => {
+    if (i > 0) {
+      const conv = h('div', 'ex-stage-conv' + (i === worst ? ' ex-bad' : ''), r.from_prev == null ? '—' : '▼ ' + fPct0(Number(r.from_prev)) + ' continue' + (i === worst ? ' · biggest loss' : ''));
+      wrap.append(h('div', 'ex-stage', null));
+      wrap.lastChild.append(conv);
+    }
+    const st = h('div', 'ex-stage');
+    const bar = h('div', 'ex-stage-bar' + (i === worst ? ' ex-bad' : ''));
+    bar.style.width = Math.max(30, (num(r.from_top) || 0) * 100) + '%';
+    if (i !== worst) bar.style.background = C(i);
+    const main = h('span', 'ex-stage-main', labels[r.stage] || r.stage);
+    main.append(h('small', '', fInt(Number(r.sessions))));
+    bar.append(main);
+    st.append(bar);
+    wrap.append(st);
+  });
+  box.replaceChildren(wrap);
+}
+
+function drawLine(box, metric, fmt) {
+  const W = box.clientWidth;
+  if (!W) return;
+  const pts = dash.data('ops_monthly').data.filter((d) => d[metric] != null).map((d) => ({m: parseM(d.month), v: Number(d[metric])}));
+  if (pts.length < 2) { box.replaceChildren(); return; }
+  const H = 150;
+  const m = {t: 8, r: 10, b: 22, l: 40};
+  const x = d3.scaleUtc([pts[0].m, pts[pts.length - 1].m], [m.l, W - m.r]);
+  const lo = d3.min(pts, (d) => d.v);
+  const hi = d3.max(pts, (d) => d.v);
+  const pad = (hi - lo) * 0.2 || hi * 0.1 || 1;
+  const y = d3.scaleLinear([Math.max(0, lo - pad), hi + pad], [H - m.b, m.t]).nice(3);
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', metric + ' by month');
+  const ticks = y.ticks(3);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('x', m.l - 6).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').attr('style', AX).text((t) => FMT[fmt](t));
+  svg.append('text').attr('x', m.l).attr('y', H - 5).attr('style', AX).text(monthShort(pts[0].m));
+  svg.append('text').attr('x', W - m.r).attr('y', H - 5).attr('text-anchor', 'end').attr('style', AX).text(monthShort(pts[pts.length - 1].m));
+  svg.append('path').attr('d', d3.line().x((d) => x(d.m)).y((d) => y(d.v))(pts)).attr('fill', 'none').attr('stroke', C(0)).attr('stroke-width', 2.5).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  const lastP = pts[pts.length - 1];
+  svg.append('circle').attr('cx', x(lastP.m)).attr('cy', y(lastP.v)).attr('r', 4).attr('fill', C(0));
+  svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (d) => x(d.m)).attr('cy', (d) => y(d.v)).attr('r', 9).attr('fill', 'transparent')
+    .on('pointerenter pointermove', (ev, d) => showTip(box, ev, [monthLong(d.m), FMT[fmt](d.v)]))
+    .on('pointerleave', () => hideTip(box));
+  box.replaceChildren(svg.node());
+}
+
+function drawTable(id, ds, cols, o) {
+  const t = document.getElementById(id);
+  if (!t) return;
+  const tb = t.tBodies[0];
+  const st = (tblState[id] = tblState[id] || {key: o.sort, dir: 'desc', q: ''});
+  const ids = [ds, ...cols.filter((c) => c.src).map((c) => c.src)];
+  const status = statusOf(ids);
+  if (status !== 'ok') {
+    tb.replaceChildren();
+    const td = tb.insertRow().insertCell();
+    td.colSpan = cols.length;
+    td.className = 'ex-state' + (status === 'loading' ? ' dash-skeleton' : '');
+    td.textContent = status === 'loading' ? '' : 'Failed to load';
+    return;
+  }
+  let rows = dash.data(ds).data.map((x) => ({...x}));
+  cols.filter((c) => c.src).forEach((c) => {
+    const m = new Map(dash.data(c.src).data.map((x) => [x.department + '|' + x.category, x[c.f]]));
+    rows.forEach((x) => { x[c.f] = m.get(x.department + '|' + x.category) || ''; });
+  });
+  const q = st.q.trim().toLowerCase();
+  if (q) rows = rows.filter((x) => cols.some((c) => String(x[c.f]).toLowerCase().includes(q)));
+  const sc = cols.find((c) => c.f === st.key);
+  if (sc) {
+    rows.sort((a, b) => {
+      const A = sc.num ? Number(a[sc.f]) : String(a[sc.f]);
+      const B = sc.num ? Number(b[sc.f]) : String(b[sc.f]);
+      return (A < B ? -1 : A > B ? 1 : 0) * (st.dir === 'asc' ? 1 : -1);
+    });
+  }
+  $$('th[data-field]', t).forEach((th) => {
+    if (th.dataset.field === st.key) th.setAttribute('aria-sort', st.dir === 'asc' ? 'ascending' : 'descending');
+    else th.removeAttribute('aria-sort');
+  });
+  const p = dash.params();
+  const maxes = {};
+  cols.filter((c) => c.bar).forEach((c) => { maxes[c.f] = d3.max(rows, (x) => Number(x[c.f])) || 1; });
+  tb.replaceChildren();
+  rows.forEach((x) => {
+    const tr = tb.insertRow();
+    tr.dataset.key = o.keyOf(x);
+    if (o.pick) {
+      tr.classList.add('ex-click');
+      tr.dataset.dep = x.department;
+      tr.dataset.cat = x.category;
+      if (p.category === x.category && p.department === x.department) tr.classList.add('ex-on');
+    }
+    cols.forEach((c) => {
+      const td = tr.insertCell();
+      const raw = x[c.f];
+      td.textContent = raw == null || raw === '' ? (c.src ? '' : '—') : c.fmt ? c.fmt(Number(raw)) : String(raw);
+      const cls = [];
+      if (c.num) cls.push('ex-num');
+      if (c.src) cls.push('ex-spk');
+      if (c.sign && raw != null && raw !== '') cls.push(Number(raw) > 0 ? 'ex-up' : Number(raw) < 0 ? 'ex-down' : '');
+      td.className = cls.join(' ');
+      if (c.bar && raw != null) {
+        const pctw = (Number(raw) / maxes[c.f]) * 100;
+        td.style.background = `linear-gradient(90deg, color-mix(in srgb, ${C(0)} 24%, transparent) ${pctw}%, transparent ${pctw}%)`;
+      }
+    });
+  });
+}
+
+function render() {
+  safe(paintIcons);
+  safe(syncControls);
+  safe(fillMarks);
+  if (active === 'overview') {
+    $$('.ex-kpi').forEach((card) => safe(paint, $('.ex-spark', card), ['trend'], (b) => drawSpark(b, card.dataset.metric, C(Number(card.dataset.i)))));
+    safe(paint, $('#ex-trend'), ['trend'], drawTrend);
+    safe(paint, $('#ex-channels'), ['channels'], drawChannels);
+    safe(paint, $('#ex-treemap'), ['categories'], drawTreemap);
+  }
+  if (active === 'customers' && loaded.customers) {
+    safe(paint, $('#ex-cohorts'), ['cohorts'], drawCohorts);
+    safe(paint, $('#ex-demo'), ['demo'], drawDemo);
+    safe(paint, $('#ex-map'), ['states'], drawMap);
+    safe(paint, $('#ex-states'), ['states'], drawTopStates);
+    safe(paint, $('#ex-countries'), ['countries'], drawCountries);
+  }
+  if (active === 'products' && loaded.products) {
+    safe(drawTable, 'ex-cat', 'categories', [
+      {f: 'category'}, {f: 'department'}, {f: 'spark', src: 'cat_trend'},
+      {f: 'revenue', num: true, fmt: FMT.usd0, bar: true}, {f: 'growth', num: true, fmt: FMT.sgn, sign: true},
+      {f: 'margin', num: true, fmt: FMT.pct}, {f: 'items', num: true, fmt: FMT.int}
+    ], {sort: 'revenue', pick: true, keyOf: (x) => encodeURIComponent(x.department) + ',' + encodeURIComponent(x.category)});
+    safe(drawTable, 'ex-prod', 'top_products', [
+      {f: 'product'}, {f: 'brand'}, {f: 'category'}, {f: 'units', num: true, fmt: FMT.int},
+      {f: 'revenue', num: true, fmt: FMT.usd0, bar: true}, {f: 'margin', num: true, fmt: FMT.pct}
+    ], {sort: 'revenue', keyOf: (x) => String(x.product_id)});
+  }
+  if (active === 'operations' && loaded.operations) {
+    safe(paint, $('#ex-funnel'), ['funnel_rates'], drawFunnel);
+    $$('.ex-mini').forEach((b) => safe(paint, b, ['ops_monthly'], (box) => drawLine(box, b.dataset.metric, b.dataset.fmtId)));
+    safe(drawTable, 'ex-dc', 'dc', [
+      {f: 'center'}, {f: 'items', num: true, fmt: FMT.int}, {f: 'revenue', num: true, fmt: FMT.usd0, bar: true},
+      {f: 'days_to_ship', num: true, fmt: FMT.d1}, {f: 'return_rate', num: true, fmt: FMT.pct}
+    ], {sort: 'revenue', keyOf: (x) => String(x.center)});
+  }
+}
+
+function showTab(name) {
+  active = name;
+  $$('.ex-tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+  $$('.ex-page').forEach((pg) => { pg.hidden = pg.id !== name; });
+  if (!loaded[name]) {
+    $('#' + name).append(document.getElementById('tpl-' + name).content.cloneNode(true));
+    loaded[name] = true;
+  }
+  dash.setLink(name);
+  render();
+}
+
+const rootEl = $('#ex-root');
+for (let i = 0; i < 8; i++) rootEl.style.setProperty('--ex-base' + i, dash.colors[i % dash.colors.length]);
+$$('.ex-kpi, .ex-insight').forEach((c) => c.style.setProperty('--k', C(Number(c.dataset.i))));
+
+function setTheme(mode) {
+  rootEl.classList.toggle('ex-dark', mode === 'dark');
+  rootEl.classList.toggle('ex-light', mode !== 'dark');
+  $$('.ex-theme button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.theme === mode)));
+}
+function appIsDark() {
+  const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(getComputedStyle(document.body).backgroundColor || '');
+  if (m && (m[4] === undefined || Number(m[4]) > 0.5)) return (0.299 * m[1] + 0.587 * m[2] + 0.114 * m[3]) < 128;
+  return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+}
+$('.ex-theme').addEventListener('click', (ev) => {
+  const b = ev.target.closest('button[data-theme]');
+  if (b) setTheme(b.dataset.theme);
+});
+setTheme(appIsDark() ? 'dark' : 'light');
+
+$('.ex-tabs').addEventListener('click', (ev) => {
+  const b = ev.target.closest('.ex-tab');
+  if (b) showTab(b.dataset.tab);
+});
+$('#f-months').addEventListener('change', (ev) => dash.setParams({months: Number(ev.target.value)}));
+$('#f-department').addEventListener('change', (ev) => dash.setParams({department: ev.target.value || null, category: null}));
+$('#f-channel').addEventListener('change', (ev) => dash.setParams({channel: ev.target.value || null}));
+$('#f-reset').addEventListener('click', () => dash.resetParams());
+
+rootEl.addEventListener('click', (ev) => {
+  const th = ev.target.closest('th[data-field]');
+  if (th) {
+    const table = th.closest('table');
+    if (table && table.id && table.classList.contains('ex-sortable') && !th.dataset.source) {
+      const st = (tblState[table.id] = tblState[table.id] || {key: null, dir: 'desc', q: ''});
+      if (st.key === th.dataset.field) st.dir = st.dir === 'desc' ? 'asc' : 'desc';
+      else { st.key = th.dataset.field; st.dir = th.classList.contains('ex-num') ? 'desc' : 'asc'; }
+      render();
+    }
+    return;
+  }
+  const tr = ev.target.closest('tr.ex-click');
+  if (tr) toggleCategory(tr.dataset.dep, tr.dataset.cat);
+});
+rootEl.addEventListener('input', (ev) => {
+  const s = ev.target.closest('.ex-search');
+  if (!s) return;
+  const st = (tblState[s.dataset.table] = tblState[s.dataset.table] || {key: null, dir: 'desc', q: ''});
+  st.q = s.value;
+  render();
+});
+
+paintIcons();
+dash.onData(render);
+
+const named = document.getElementById(location.hash.slice(1));
+if (named && named.classList.contains('ex-page') && named.id !== 'overview') showTab(named.id);
+</script>
